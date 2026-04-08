@@ -1,0 +1,207 @@
+.booking {
+  background-color: var(--color-bg);
+}
+
+.booking__content {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: var(--space-12);
+  align-items: start;
+}
+
+.booking__step-title {
+  font-size: var(--type-lg);
+  margin-bottom: var(--space-6);
+  color: var(--color-text);
+  font-family: var(--font-heading);
+}
+
+.booking__step {
+  margin-bottom: var(--space-10);
+}
+
+/* Calendar Styles */
+.calendar {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+}
+
+.calendar__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-6);
+}
+
+.calendar__month-year {
+  font-size: var(--type-md);
+  font-weight: 600;
+}
+
+.calendar__nav {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.calendar__nav-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--color-text-muted);
+  transition: var(--transition-fast);
+}
+
+.calendar__nav-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+}
+
+.calendar__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: var(--space-2);
+  text-align: center;
+}
+
+.calendar__weekday {
+  font-size: var(--type-xs);
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar__day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--type-sm);
+  color: var(--color-text);
+  border-radius: 4px;
+  transition: var(--transition-fast);
+  background: transparent;
+}
+
+.calendar__day:not(.calendar__day--empty):not(.calendar__day--past):hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-accent);
+}
+
+.calendar__day--today {
+  color: var(--color-accent);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.calendar__day--selected {
+  background: var(--color-accent) !important;
+  color: var(--color-bg) !important;
+  font-weight: 700;
+}
+
+.calendar__day--past {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+.calendar__day--empty {
+  cursor: default;
+}
+
+/* Time Slots */
+.booking__time-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: var(--space-4);
+}
+
+.time-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--type-sm);
+  transition: var(--transition-fast);
+}
+
+.time-slot:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.time-slot--selected {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-bg);
+}
+
+/* Form Styles */
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.form-label {
+  font-size: var(--type-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.form-input {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4);
+  color: var(--color-text);
+  font-size: var(--type-sm);
+  transition: var(--transition-fast);
+}
+
+.form-input:focus {
+  border-color: var(--color-accent);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
+}
+
+.form-input--file {
+  padding: var(--space-3);
+  font-size: var(--type-xs);
+  cursor: pointer;
+}
+
+.booking__submit {
+  margin-top: var(--space-4);
+  justify-content: center;
+}
+
+@media (max-width: 1024px) {
+  .booking__content {
+    grid-template-columns: 1fr;
+    gap: var(--space-10);
+  }
+}
