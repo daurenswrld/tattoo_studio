@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Lock, Calendar } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 import './Sketches.css';
 
-const sketchesData = [
+const DEFAULT_SKETCHES = [
   { id: 1, src: '/assets/sketch-1.png', title: 'Snake & Peony', status: 'free', price: 'от 8 000 ₽' },
   { id: 2, src: '/assets/sketch-2.png', title: 'Delicate Butterfly', status: 'booked', price: 'забронирован' },
   { id: 3, src: '/assets/sketch-3.png', title: 'Geometric Wolf', status: 'free', price: 'от 12 000 ₽' },
@@ -11,9 +12,32 @@ const sketchesData = [
 ];
 
 const Sketches = () => {
+  const [sketches, setSketches] = useState(DEFAULT_SKETCHES);
   const [filter, setFilter] = useState('all'); // all, free, booked
 
-  const filteredSketches = sketchesData.filter(sketch => {
+  useEffect(() => {
+    fetchSketches();
+  }, []);
+
+  const fetchSketches = async () => {
+    const { data, error } = await supabase
+      .from('sketches')
+      .select('*')
+      .order('id', { ascending: true });
+    
+    if (data && data.length > 0) {
+      const formattedData = data.map(item => ({
+        id: item.id,
+        src: item.image_url,
+        title: item.title,
+        status: item.status,
+        price: item.price
+      }));
+      setSketches(formattedData);
+    }
+  };
+
+  const filteredSketches = sketches.filter(sketch => {
     if (filter === 'all') return true;
     return sketch.status === filter;
   });
@@ -81,7 +105,7 @@ const Sketches = () => {
                 
                 <div className="sketch-card__content">
                   <h3 className="sketch-card__title">{sketch.title}</h3>
-                  <p className="sketch-card__price">{sketch.price}</p>
+                  <p className="sketch-card__price">{sketch.price.replace(/[₽Pр\.]/g, '₸')}</p>
                   
                   {sketch.status === 'free' ? (
                     <a href="#booking" className="button button--primary button--sm sketch-card__button">

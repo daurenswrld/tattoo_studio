@@ -109,9 +109,13 @@
   font-weight: 700;
 }
 
-.calendar__day--past {
+.calendar__day--past, .calendar__day--blocked {
   opacity: 0.2;
   cursor: not-allowed;
+}
+
+.calendar__day--blocked {
+  text-decoration: line-through;
 }
 
 .calendar__day--empty {

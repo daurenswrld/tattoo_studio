@@ -1,27 +1,23 @@
-import Header from './components/Header/Header';
-import Hero from './components/Hero/Hero';
-import Portfolio from './components/Portfolio/Portfolio';
-import Sketches from './components/Sketches/Sketches';
-import Booking from './components/Booking/Booking';
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import Login from './pages/Admin/Login';
+import Dashboard from './pages/Admin/Dashboard';
 
 function App() {
   return (
     <div className="app">
-      <Header />
-      <main>
-        <Hero />
-        <Portfolio />
-        <Sketches />
-        <Booking />
-      </main>
-      
-      <footer className="footer section-padding" style={{ borderTop: '1px solid var(--color-border)' }}>
-        <div className="container">
-          <p className="footer__text" style={{ color: 'var(--color-text-muted)', fontSize: 'var(--type-sm)', textAlign: 'center' }}>
-            © {new Date().getFullYear()} TATTOO STUDIO. ПРЕМИАЛЬНЫЙ СТАНДАРТ КАЧЕСТВА.
-          </p>
-        </div>
-      </footer>
+      <Routes>
+        {/* Клиентская часть */}
+        <Route path="/" element={<Home />} />
+        
+        {/* Админка */}
+        <Route path="/admin" element={<Login />} />
+        <Route path="/admin/dashboard" element={<Dashboard />} />
+        
+        {/* Заглушка для неизвестных страниц */}
+        <Route path="*" element={<Home />} />
+      </Routes>
     </div>
   );
 }

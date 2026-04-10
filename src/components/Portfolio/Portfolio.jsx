@@ -1,17 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Maximize2, X } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 import './Portfolio.css';
 
-const images = [
+const DEFAULT_IMAGES = [
   { id: 1, src: '/assets/portfolio-1.png', title: 'Black & Grey Lion', category: 'Графика' },
   { id: 2, src: '/assets/portfolio-2.png', title: 'Compass & Rose', category: 'Реализм' },
   { id: 3, src: '/assets/portfolio-3.png', title: 'Owl Spirit', category: 'Блэкворк' },
 ];
 
 const Portfolio = () => {
+  const [images, setImages] = useState(DEFAULT_IMAGES);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedImage, setSelectedImage] = useState(null);
+
+  useEffect(() => {
+    fetchPortfolio();
+  }, []);
+
+  const fetchPortfolio = async () => {
+    const { data, error } = await supabase
+      .from('portfolio')
+      .select('*')
+      .order('id', { ascending: true });
+    
+    if (data && data.length > 0) {
+      // Map Supabase column names to our component names if they differ
+      const formattedData = data.map(item => ({
+        id: item.id,
+        src: item.image_url,
+        title: item.title,
+        category: item.category
+      }));
+      setImages(formattedData);
+    }
+  };
 
   // Close lightbox on Escape key
   useEffect(() => {
