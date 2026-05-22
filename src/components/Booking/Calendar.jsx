@@ -63,16 +63,18 @@ const Calendar = ({ selectedDate, onDateSelect }) => {
       
       const isToday = todayAlmaty.toDateString() === date.toDateString();
       const isPast = date < todayAlmaty;
+      const dayOfWeek = date.getDay();
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6; // Sunday = 0, Saturday = 6
       const isBlocked = blockedDates.includes(dateStr);
       const isSelected = selectedDate?.toDateString() === date.toDateString();
 
       days.push(
         <button
           key={i}
-          disabled={isPast || isBlocked}
+          disabled={isPast || isBlocked || isWeekend}
           onClick={() => onDateSelect(date)}
-          className={`calendar__day ${isToday ? 'calendar__day--today' : ''} ${isSelected ? 'calendar__day--selected' : ''} ${isPast ? 'calendar__day--past' : ''} ${isBlocked ? 'calendar__day--blocked' : ''}`}
-          title={isBlocked ? 'Дата заблокирована мастером' : ''}
+          className={`calendar__day ${isToday ? 'calendar__day--today' : ''} ${isSelected ? 'calendar__day--selected' : ''} ${isPast ? 'calendar__day--past' : ''} ${isBlocked ? 'calendar__day--blocked' : ''} ${isWeekend ? 'calendar__day--weekend' : ''}`}
+          title={isBlocked ? 'Дата заблокирована мастером' : isWeekend ? 'Выходной день' : ''}
         >
           {i}
         </button>

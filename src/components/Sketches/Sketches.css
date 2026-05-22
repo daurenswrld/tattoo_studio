@@ -11,32 +11,86 @@
 
 .filter-btn {
   font-size: var(--type-sm);
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--color-text-muted);
-  padding: var(--space-2) var(--space-4);
-  border-bottom: 2px solid transparent;
-  transition: var(--transition-fast);
+  padding: 10px 24px;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .filter-btn--active {
-  color: var(--color-text);
-  border-bottom-color: var(--color-accent);
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
 }
 
-.sketches__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--space-8);
+.sketches__empty {
+  width: 100%;
+  text-align: center;
+  padding: var(--space-24) var(--space-8);
+  margin-bottom: var(--space-12);
+  color: var(--color-text-muted);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sketches__empty .empty-content {
+  max-width: 450px;
+}
+
+.sketches__empty .empty-icon {
+  display: block;
+  font-size: 32px;
+  margin-bottom: var(--space-4);
+  color: var(--color-accent);
+  opacity: 0.5;
+}
+
+.sketches__empty p {
+  font-family: var(--font-heading);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: var(--type-sm);
+  color: var(--color-text);
+}
+
+.sketches__slider-container {
+  width: 100%;
+  overflow: hidden;
+  cursor: grab;
+  padding: var(--space-4) 0;
+}
+
+.sketches__slider-container:active {
+  cursor: grabbing;
+}
+
+.sketches__slider {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-6);
+  padding: 0 var(--space-4);
+  width: max-content;
+  margin: 0 auto;
 }
 
 .sketch-card {
+  flex: 0 0 320px; /* Fixed width for slider */
   background: var(--color-surface);
   border-radius: var(--radius-md);
   overflow: hidden;
-  transition: var(--transition-normal);
+  transition: transform var(--transition-normal), border var(--transition-normal);
   border: 1px solid var(--color-border);
+  user-select: none;
 }
 
 .sketch-card:hover {
@@ -52,7 +106,7 @@
 .sketch-card__image-container {
   position: relative;
   aspect-ratio: 1;
-  background: #fff; /* Sketches look better on white background */
+  background: #fff;
   overflow: hidden;
 }
 
@@ -62,6 +116,7 @@
   object-fit: contain;
   padding: var(--space-4);
   transition: transform 0.6s ease;
+  pointer-events: none; /* Prevent image drag interfering with slider drag */
 }
 
 .sketch-card:hover .sketch-card__image {
@@ -82,7 +137,7 @@
 .sketch-card__title {
   font-size: var(--type-lg);
   margin-bottom: var(--space-1);
-  text-transform: none; /* Keep titles readable */
+  text-transform: none;
 }
 
 .sketch-card__price {
@@ -100,9 +155,15 @@
     gap: var(--space-2);
     overflow-x: auto;
     padding-bottom: var(--space-4);
+    padding-left: var(--space-4);
+    justify-content: flex-start;
   }
   
-  .sketches__grid {
-    grid-template-columns: 1fr;
+  .sketch-card {
+    flex: 0 0 280px;
+  }
+
+  .sketches__slider {
+    gap: var(--space-4);
   }
 }

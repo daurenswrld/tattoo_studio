@@ -4,25 +4,29 @@ import Hero from '../components/Hero/Hero';
 import Portfolio from '../components/Portfolio/Portfolio';
 import Sketches from '../components/Sketches/Sketches';
 import Booking from '../components/Booking/Booking';
+import Footer from '../components/Footer/Footer';
 
 const Home = () => {
+  const [selectedSketch, setSelectedSketch] = React.useState(null);
+
+  const handleSketchSelect = (sketch) => {
+    setSelectedSketch(sketch);
+    const bookingSection = document.getElementById('booking');
+    if (bookingSection) {
+      bookingSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="home-page">
       <Header />
       <main>
         <Hero />
+        <Booking initialSketch={selectedSketch} />
         <Portfolio />
-        <Sketches />
-        <Booking />
+        <Sketches onSelectSketch={handleSketchSelect} />
       </main>
-      
-      <footer className="footer section-padding" style={{ borderTop: '1px solid var(--color-border)' }}>
-        <div className="container">
-          <p className="footer__text" style={{ color: 'var(--color-text-muted)', fontSize: 'var(--type-sm)', textAlign: 'center' }}>
-            © {new Date().getFullYear()} TATTOO STUDIO. ПРЕМИАЛЬНЫЙ СТАНДАРТ КАЧЕСТВА.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

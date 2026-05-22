@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase';
 import { Calendar as CalendarIcon, Trash2, Loader2, Plus } from 'lucide-react';
 import Calendar from '../../components/Booking/Calendar';
 import { format } from 'date-fns';
+import AdminLoader from '../../components/Admin/AdminLoader';
 
 const ScheduleManager = () => {
   const [blockedDates, setBlockedDates] = useState([]);
@@ -72,7 +73,7 @@ const ScheduleManager = () => {
     }
   };
 
-  if (loading) return <div>Загрузка графика...</div>;
+  if (loading) return <AdminLoader message="Загружаем график..." />;
 
   return (
     <div className="schedule-manager">

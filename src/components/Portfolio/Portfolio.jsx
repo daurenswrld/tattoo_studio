@@ -12,30 +12,58 @@ const DEFAULT_IMAGES = [
 
 const Portfolio = () => {
   const [images, setImages] = useState(DEFAULT_IMAGES);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [categories, setCategories] = useState(['Все']);
+  const [filter, setFilter] = useState('Все');
   const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     fetchPortfolio();
+    fetchCategories();
   }, []);
 
-  const fetchPortfolio = async () => {
-    const { data, error } = await supabase
-      .from('portfolio')
-      .select('*')
-      .order('id', { ascending: true });
-    
-    if (data && data.length > 0) {
-      // Map Supabase column names to our component names if they differ
-      const formattedData = data.map(item => ({
-        id: item.id,
-        src: item.image_url,
-        title: item.title,
-        category: item.category
-      }));
-      setImages(formattedData);
+  const fetchCategories = async () => {
+    try {
+      const { data } = await supabase
+        .from('portfolio_categories')
+        .select('name')
+        .order('name');
+      if (data && Array.isArray(data)) {
+        setCategories(['Все', ...data.map(c => c.name)]);
+      }
+    } catch (err) {
+      console.error('Error fetching categories:', err);
     }
   };
+
+  const fetchPortfolio = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('portfolio')
+        .select('*')
+        .order('id', { ascending: true })
+        .limit(10); // Adding limit just in case
+      
+      if (error) throw error;
+      
+      if (data && data.length > 0) {
+        const formattedData = data.map(item => ({
+          id: item.id,
+          src: item.image_url,
+          title: item.title,
+          category: item.category,
+          isFeatured: item.is_featured
+        }));
+        setImages(formattedData);
+      }
+    } catch (err) {
+      console.error('Error fetching portfolio:', err);
+      // Keep DEFAULT_IMAGES on error
+    }
+  };
+
+  const filteredImages = images.filter(img => 
+    filter === 'Все' || img.category === filter
+  );
 
   // Close lightbox on Escape key
   useEffect(() => {
@@ -45,14 +73,6 @@ const Portfolio = () => {
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
   }, []);
-
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
 
   return (
     <section id="portfolio" className="portfolio section-padding">
@@ -68,66 +88,69 @@ const Portfolio = () => {
           <p className="section-subtitle">Избранные работы в стиле Black & Grey</p>
         </motion.div>
 
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="portfolio__slider"
-        >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentIndex}
-              className="portfolio__slide"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
+        <div className="portfolio__filters">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              className={`filter-btn ${filter === cat ? 'filter-btn--active' : ''}`}
+              onClick={() => setFilter(cat)}
             >
-              <div 
-                className="portfolio__image-wrapper"
-                onClick={() => setSelectedImage(images[currentIndex])}
-              >
-                <img 
-                  src={images[currentIndex].src} 
-                  alt={images[currentIndex].title} 
-                  className="portfolio__image" 
-                />
-                <div className="portfolio__overlay">
-                  <div className="portfolio__info">
-                    <span className="portfolio__cat">{images[currentIndex].category}</span>
-                    <h3 className="portfolio__item-title">{images[currentIndex].title}</h3>
-                  </div>
-                  <button 
-                    className="portfolio__zoom" 
-                    onClick={() => setSelectedImage(images[currentIndex])}
-                    aria-label="Увеличить"
-                  >
-                    <Maximize2 size={24} />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
+              {cat}
+            </button>
+          ))}
+        </div>
 
-          <div className="portfolio__controls">
-            <button className="portfolio__arrow" onClick={prevSlide} aria-label="Назад">
-              <ChevronLeft size={24} />
-            </button>
-            <div className="portfolio__dots">
-              {images.map((_, index) => (
-                <button
-                  key={index}
-                  className={`portfolio__dot ${index === currentIndex ? 'portfolio__dot--active' : ''}`}
-                  onClick={() => setCurrentIndex(index)}
-                  aria-label={`Перейти к слайду ${index + 1}`}
-                />
-              ))}
-            </div>
-            <button className="portfolio__arrow" onClick={nextSlide} aria-label="Вперед">
-              <ChevronRight size={24} />
-            </button>
-          </div>
+        <motion.div 
+          layout
+          className="portfolio__grid"
+        >
+          <AnimatePresence mode="popLayout">
+            {filteredImages.length === 0 ? (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="portfolio__empty"
+              >
+                <div className="empty-content">
+                  <span className="empty-icon">✧</span>
+                  <p>Пространство в ожидании искусства</p>
+                  <small>Новые работы скоро появятся в галерее</small>
+                </div>
+              </motion.div>
+            ) : (
+              filteredImages.map((image) => (
+                <motion.div
+                  layout
+                  key={image.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.4 }}
+                  className={`portfolio__item ${image.isFeatured ? 'portfolio__item--featured' : ''}`}
+                  onClick={() => setSelectedImage(image)}
+                >
+                  <div className="portfolio__image-wrapper">
+                    <img 
+                      src={image.src} 
+                      alt={image.title} 
+                      className="portfolio__image" 
+                      loading="lazy"
+                    />
+                    <div className="portfolio__overlay">
+                      <div className="portfolio__info">
+                        <span className="portfolio__cat">{image.category}</span>
+                        <h3 className="portfolio__item-title">{image.title}</h3>
+                      </div>
+                      <div className="portfolio__zoom">
+                        <Maximize2 size={20} />
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))
+            )}
+          </AnimatePresence>
         </motion.div>
       </div>
 

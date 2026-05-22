@@ -4,7 +4,7 @@
   display: flex;
   align-items: center;
   overflow: hidden;
-  padding-top: var(--space-16);
+  padding-top: 140px; /* Increased from var(--space-16) to prevent header overlap */
 }
 
 .hero__bg {
@@ -72,7 +72,7 @@
 @media (max-width: 768px) {
   .hero {
     min-height: auto;
-    padding-top: 120px;
+    padding-top: 160px; /* Increased to prevent mobile header overlap */
     padding-bottom: var(--space-12);
   }
 
@@ -86,6 +86,10 @@
 
   .hero__actions {
     flex-direction: column;
+  }
+  
+  .hero__scroll-indicator {
+    display: none; /* Hide on mobile to prevent overlapping */
   }
 }
 

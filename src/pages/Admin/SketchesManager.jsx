@@ -9,6 +9,7 @@ import {
   CheckCircle,
   Clock
 } from 'lucide-react';
+import AdminLoader from '../../components/Admin/AdminLoader';
 
 const SketchesManager = () => {
   const [sketches, setSketches] = useState([]);
@@ -120,7 +121,7 @@ const SketchesManager = () => {
     }
   };
 
-  if (loading) return <div>Загрузка эскизов...</div>;
+  if (loading) return <AdminLoader message="Загружаем витрину..." />;
 
   return (
     <div className="sketches-manager">
@@ -192,7 +193,7 @@ const SketchesManager = () => {
                   className="form-input" 
                   required 
                   value={price}
-                  onChange={(e) => setPrice(e.target.value.replace(/[₽Ppр]/g, '₸'))}
+                  onChange={(e) => setPrice(e.target.value.replace(/[₽Pр\.]/g, '₸'))}
                 />
               </div>
 

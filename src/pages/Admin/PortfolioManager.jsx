@@ -8,21 +8,40 @@ import {
   X,
   Upload
 } from 'lucide-react';
+import AdminLoader from '../../components/Admin/AdminLoader';
 
 const PortfolioManager = () => {
   const [works, setWorks] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   // Form state
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('Графика');
+  const [category, setCategory] = useState('');
   const [file, setFile] = useState(null);
+  const [isFeatured, setIsFeatured] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     fetchWorks();
+    fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const { data } = await supabase
+        .from('portfolio_categories')
+        .select('*')
+        .order('name');
+      if (data && Array.isArray(data)) {
+        setCategories(data);
+        if (data.length > 0) setCategory(data[0].name);
+      }
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+    }
+  };
 
   const fetchWorks = async () => {
     try {
@@ -68,7 +87,8 @@ const PortfolioManager = () => {
         .insert([{
           title,
           category,
-          image_url: publicUrl
+          image_url: publicUrl,
+          is_featured: isFeatured
         }]);
 
       if (dbError) throw dbError;
@@ -77,6 +97,7 @@ const PortfolioManager = () => {
       setIsModalOpen(false);
       setTitle('');
       setFile(null);
+      setIsFeatured(false);
       fetchWorks();
     } catch (err) {
       alert('Ошибка при загрузке: ' + err.message);
@@ -114,7 +135,7 @@ const PortfolioManager = () => {
     }
   };
 
-  if (loading) return <div>Загрузка портфолио...</div>;
+  if (loading) return <AdminLoader message="Загружаем портфолио..." />;
 
   return (
     <div className="portfolio-manager">
@@ -127,10 +148,13 @@ const PortfolioManager = () => {
 
       <div className="admin-gallery">
         {works.map((work) => (
-          <div key={work.id} className="admin-gallery__item">
+          <div key={work.id} className={`admin-gallery__item ${work.is_featured ? 'admin-gallery__item--featured' : ''}`}>
             <img src={work.image_url} alt={work.title} />
             <div className="admin-gallery__overlay">
-              <span className="admin-gallery__cat">{work.category}</span>
+              <span className="admin-gallery__cat">
+                {work.category}
+                {work.is_featured && <span className="admin-gallery__featured-tag">★ Крупный</span>}
+              </span>
               <button 
                 className="admin-gallery__delete" 
                 onClick={() => handleDelete(work)}
@@ -170,13 +194,26 @@ const PortfolioManager = () => {
                   className="form-input" 
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
+                  required
                 >
-                  <option value="Графика">Графика</option>
-                  <option value="Реализм">Реализм</option>
-                  <option value="Блэкворк">Блэкворк</option>
-                  <option value="Минимализм">Минимализм</option>
-                  <option value="Текст">Текст</option>
+                  {categories.length === 0 && <option value="">Сначала создайте категорию</option>}
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.name}>{cat.name}</option>
+                  ))}
                 </select>
+              </div>
+
+              <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center', gap: '10px' }}>
+                <input 
+                  type="checkbox" 
+                  id="isFeatured"
+                  checked={isFeatured}
+                  onChange={(e) => setIsFeatured(e.target.checked)}
+                  style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                />
+                <label htmlFor="isFeatured" className="form-label" style={{ marginBottom: 0, cursor: 'pointer' }}>
+                  Сделать крупным блоком (Bento Featured)
+                </label>
               </div>
 
               <div className="form-group">
